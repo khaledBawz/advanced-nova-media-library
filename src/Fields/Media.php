@@ -255,13 +255,16 @@ class Media extends Field
             $collectionName = call_user_func($this->computedCallback, $resource);
         }
 
-        $this->value = $resource->getMedia($collectionName)
-            ->map(function (\Spatie\MediaLibrary\MediaCollections\Models\Media $media) {
-                return array_merge($this->serializeMedia($media), ['__media_urls__' => $this->getConversionUrls($media)]);
-            })->values();
+        try {
+            $this->value = $resource->getMedia($collectionName)
+                ->map(function (\Spatie\MediaLibrary\MediaCollections\Models\Media $media) {
+                    return array_merge($this->serializeMedia($media), ['__media_urls__' => $this->getConversionUrls($media)]);
+                });
 
-        if ($collectionName) {
-            $this->checkCollectionIsMultiple($resource, $collectionName);
+            if ($collectionName) {
+                $this->checkCollectionIsMultiple($resource, $collectionName);
+            }
+        } catch (\Exception $ex) {
         }
     }
 
